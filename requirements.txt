@@ -1,0 +1,6 @@
+pyspark==2.4.5
+numpy
+pandas
+lightgbm
+sklearn
+tornado
