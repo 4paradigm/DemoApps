@@ -4,3 +4,4 @@ pandas
 lightgbm
 sklearn
 tornado
+py4j
