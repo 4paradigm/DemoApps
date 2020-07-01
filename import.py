@@ -30,8 +30,7 @@ index(key=passenger_count, ts=pickup_datetime)
 );
 """
 
-# 请申请或者搭建一个集群
-options = driver.DriverOptions("xxx", "xxx")
+options = driver.DriverOptions("127.0.0.1:2181", "/fedb")
 driver = driver.Driver(options)
 if not driver.init():
     print ("init failed")

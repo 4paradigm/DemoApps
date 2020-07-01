@@ -15,8 +15,7 @@ import json
 import lightgbm as lgb
 bst = lgb.Booster(model_file='model.txt')
 
-# 请申请或者搭建一个集群
-options = driver.DriverOptions("xxx", "xxx")
+options = driver.DriverOptions("127.0.0.1:2181", "/fedb")
 fedb_driver = driver.Driver(options)
 if not fedb_driver.init():
     sys.exit(-1)
