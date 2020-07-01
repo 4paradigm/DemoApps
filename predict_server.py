@@ -11,6 +11,7 @@ import numpy as np
 import tornado.web
 import tornado.ioloop
 from fedb import driver
+from fedb import sql_router_sdk
 import json
 import lightgbm as lgb
 bst = lgb.Booster(model_file='model.txt')
@@ -53,7 +54,7 @@ def build_feature(rs):
 
 class SchemaHandler(tornado.web.RequestHandler):
     def get(self):
-        ok, req = fedb_driver.getRequestBuilder('db_demo', sql)
+        ok, req = fedb_driver.getRequestBuilder('db_test', sql)
         if not ok or not req:
             self.write("fail to get req")
         input_schema = req.GetSchema()
@@ -61,13 +62,13 @@ class SchemaHandler(tornado.web.RequestHandler):
             self.write("no schema found")
         schema = {}
         for i in range(input_schema.GetColumnCnt()):
-            schema[input_schema.GetColumnName(i)] = input_schema.GetColumnTypeName(i)
+            schema[input_schema.GetColumnName(i)] = sql_router_sdk.DataTypeName(input_schema.GetColumnType(i))
         self.write(json.dumps(schema))
 
 class PredictHandler(tornado.web.RequestHandler):
     def post(self):
         row = json.loads(self.request.body)
-        ok, req = fedb_driver.getRequestBuilder('db_demo', sql)
+        ok, req = fedb_driver.getRequestBuilder('db_test', sql)
         if not ok or not req:
             self.write("fail to get req")
             return
@@ -77,20 +78,18 @@ class PredictHandler(tornado.web.RequestHandler):
             return
         str_length = 0
         for i in range(input_schema.GetColumnCnt()):
-            print(input_schema.GetColumnTypeName(i))
-            if input_schema.GetColumnTypeName(i) == 'string':
-                print("str col %s"%row.get(input_schema.GetColumnName(i), ''))
+            if sql_router_sdk.DataTypeName(input_schema.GetColumnType(i)) == 'string':
                 str_length = str_length + len(row.get(input_schema.GetColumnName(i), ''))
-        print("str_length %d"%str_length)
         req.Init(str_length)
         for i in range(input_schema.GetColumnCnt()):
-            if input_schema.GetColumnTypeName(i) == 'string':
+            tname =  sql_router_sdk.DataTypeName(input_schema.GetColumnType(i))
+            if tname == 'string':
                 req.AppendString(row.get(input_schema.GetColumnName(i), ''))
-            elif input_schema.GetColumnTypeName(i) == 'int32':
+            elif tname == 'int32':
                 req.AppendInt32(int(row.get(input_schema.GetColumnName(i), 0)))
-            elif input_schema.GetColumnTypeName(i) == 'double':
+            elif tname == 'double':
                 req.AppendDouble(float(row.get(input_schema.GetColumnName(i), 0)))
-            elif input_schema.GetColumnTypeName(i) == 'timestamp':
+            elif tname == 'timestamp':
                 req.AppendTimestamp(int(row.get(input_schema.GetColumnName(i), 0)))
             else:
                 req.AppendNULL()

@@ -1,6 +1,6 @@
 import requests
 import json
-url = "127.0.0.1:8887"
+url = "http://127.0.0.1:8887"
 req ={"id":"id0376262",
 	"vendor_id":1,
 	"pickup_datetime":1467302350000,
@@ -14,3 +14,4 @@ req ={"id":"id0376262",
 	"trip_duration":1}
 r = requests.post(url, json=json.dumps(req))
 print(r.text)
+
