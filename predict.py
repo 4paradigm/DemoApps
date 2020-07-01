@@ -1,6 +1,5 @@
 import requests
-import json
-url = "http://127.0.0.1:8887"
+url = "http://127.0.0.1:8887/predict"
 req ={"id":"id0376262",
 	"vendor_id":1,
 	"pickup_datetime":1467302350000,
@@ -12,6 +11,6 @@ req ={"id":"id0376262",
 	"dropoff_latitude":40.856739,
 	"store_and_fwd_flag":"N",
 	"trip_duration":1}
-r = requests.post(url, json=json.dumps(req))
+r = requests.post(url, json=req)
 print(r.text)
 

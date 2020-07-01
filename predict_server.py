@@ -97,7 +97,7 @@ class PredictHandler(tornado.web.RequestHandler):
             self.write("fail to build request")
             return
 
-        ok, rs = fedb_driver.executeQuery('db_demo', sql, req)
+        ok, rs = fedb_driver.executeQuery('db_test', sql, req)
         if not ok:
             self.write("fail to execute sql")
             return
