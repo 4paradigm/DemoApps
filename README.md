@@ -2,7 +2,7 @@
 
 ## 加入群做交流
 
-![交流群](images/code.png)
+![交流群](/images/code.png)
 
 ## 工程文件介绍
 
