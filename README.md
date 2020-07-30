@@ -48,8 +48,13 @@ docker run -d develop-registry.4pd.io/fedb:2.0.0
 ```
 docker ps | grep fedb | awk '{print $1}' 
 55275653a728
+```
+
 # 进行容器
+
+```
 docker exec -it 55275653a728 /bin/bash
+```
 
 # sql特征脚本
 
