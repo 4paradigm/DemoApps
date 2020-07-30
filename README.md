@@ -76,6 +76,8 @@ w2 as (partition by passenger_count order by pickup_datetime ROWS_RANGE BETWEEN 
 
 ```
 # 运行fedb数据库命令
+
+```
 fedb --zk_cluster=127.0.0.1:2181 --zk_root_path=/fedb --role=sql_client 2>/dev/null
   ______   _____  ___
  |  ____|  |  __ \|  _ \
