@@ -1,5 +1,7 @@
 # FEDB with SparkSQL demo
 
+originally called RTIDB, now renamed to FEDB
+
 ## 加入群做交流
 
 ![交流群](/images/code.png)
