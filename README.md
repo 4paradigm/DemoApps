@@ -2,12 +2,6 @@
 
 originally called RTIDB, now renamed to FEDB
 
-## 加入群做交流
-
-![交流群](/images/code.png)
-扫码关注小助手，回复“FEDB”加入交流群。
-获取测试版本的FEDB，获得快速上手教程，交流FEDB的使用方法，与FEDB的创始团队沟通，与范式科学家一对一交流等。
-加入交流群，随心所欲的交流，获取最前沿的AI动态
 
 ## 工程文件介绍
 
