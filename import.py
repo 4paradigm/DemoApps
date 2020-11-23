@@ -1,5 +1,4 @@
 #! /usr/bin/env python
-print("sql x {}".format(x))
 # -*- coding: utf-8 -*-
 # vim:fenc=utf-8
 #
@@ -7,7 +6,7 @@ print("sql x {}".format(x))
 
 """
 """
-from fedb import driver
+import sqlalchemy as db
 
 
 import sys
@@ -30,7 +29,7 @@ index(key=vendor_id, ts=pickup_datetime),
 index(key=passenger_count, ts=pickup_datetime)
 );
 """
-engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb', echo=True)
+engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb')
 connection = engine.connect()
 try:
     connection.execute("create database db_test;");
@@ -45,6 +44,7 @@ def insert_row(line):
     row = line.split(',')
     row[2] = '%dl'%int(datetime.datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S').timestamp() * 1000)
     row[3] = '%dl'%int(datetime.datetime.strptime(row[3], '%Y-%m-%d %H:%M:%S').timestamp() * 1000)
+    insert = "insert into t1 values('%s', %s, %s, %s, %s, %s, %s, %s, %s, '%s', %s);"% tuple(row)
     connection.execute(insert);
 
 with open('data/taxi_tour_table_train_simple.csv', 'r') as fd:

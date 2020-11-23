@@ -17,7 +17,7 @@ from sqlalchemy_fedb.fedbapi import Type as feType
 
 bst = lgb.Booster(model_file='model.txt')
 
-engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb', echo=True)
+engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb')
 connection = engine.connect()
 sql = """select trip_duration, passenger_count,
 sum(pickup_latitude) over w as vendor_sum_pl,
@@ -53,32 +53,17 @@ table_schema = [
 def get_schema(conn, sql):
     rs = conn.execute(sql)
     desc = rs._cursor_description()
-    cols = list()
     dict_schema = {}
     for i in desc:
-        col = i[0]
-        col_type = TypeDict[i[1]]
-        cols.append((col, col_type))
-        dict_schema[col] = col_type
-    return cols, dict_schema
+        dict_schema[i[0]] = TypeDict[i[1]]
+    return dict_schema
 
-sql_schema, dict_schema = get_schema(connection, sql)
+dict_schema = get_schema(connection, sql)
 json_schema = json.dumps(dict_schema)
+
 def build_feature(rs):
     var_Y = [rs[0]]
-    row_X = [rs[1],
-            rs[2],
-            rs[3],
-            rs[4],
-            rs[5],
-            rs[6],
-            rs[7],
-            rs[8],
-            rs[9],
-            rs[10],
-            rs[11],
-            ]
-    var_X = [row_X]
+    var_X = [rs[1:12]]
     return np.array(var_X)
 
 class SchemaHandler(tornado.web.RequestHandler):
@@ -92,7 +77,7 @@ class PredictHandler(tornado.web.RequestHandler):
         for i in table_schema:
             if i[1] == "string":
                 data.append(row.get(i[0], ""))
-            elif i[1] == "int32" or i[1] == "double" or i[1] == "timestamp" or i[1] == "bigint":
+            elif i[1] == "int" or i[1] == "double" or i[1] == "timestamp" or i[1] == "bigint":
                 data.append(row.get(i[0], 0))
             else:
                 data.append(None)
