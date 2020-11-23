@@ -10,16 +10,15 @@
 import numpy as np
 import tornado.web
 import tornado.ioloop
-from fedb import driver
-from fedb import sql_router_sdk
 import json
 import lightgbm as lgb
+import sqlalchemy as db
+from sqlalchemy_fedb.fedbapi import Type as feType
+
 bst = lgb.Booster(model_file='model.txt')
 
-options = driver.DriverOptions("127.0.0.1:2181", "/fedb")
-fedb_driver = driver.Driver(options)
-if not fedb_driver.init():
-    sys.exit(-1)
+engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb')
+connection = engine.connect()
 sql = """select trip_duration, passenger_count,
 sum(pickup_latitude) over w as vendor_sum_pl,
 max(pickup_latitude) over w as vendor_max_pl,
@@ -35,79 +34,61 @@ from t1
 window w as (partition by vendor_id order by pickup_datetime ROWS_RANGE BETWEEN 1d PRECEDING AND CURRENT ROW),
 w2 as (partition by passenger_count order by pickup_datetime ROWS_RANGE BETWEEN 1d PRECEDING AND CURRENT ROW);"""
 
+TypeDict = {feType.Bool:"bool", feType.Int16:"smallint", feType.Int32:"int", feType.Int64:"bigint", feType.Float:"float", feType.Double:"double", feType.String:"string", feType.Date:"date", feType.Timestamp:"timestamp"}
+
+table_schema = [
+	("id", "string"),
+	("vendor_id", "int"),
+	("pickup_datetime", "timestamp"),
+	("dropoff_datetime", "timestamp"),
+	("passenger_count", "int"),
+	("pickup_longitude", "double"),
+	("pickup_latitude", "double"),
+	("dropoff_longitude", "double"),
+	("dropoff_latitude", "double"),
+	("store_and_fwd_flag", "string"),
+	("trip_duration", "int"),
+]
+
+def get_schema(conn, sql):
+    rs = conn.execute(sql)
+    desc = rs._cursor_description()
+    dict_schema = {}
+    for i in desc:
+        dict_schema[i[0]] = TypeDict[i[1]]
+    return dict_schema
+
+dict_schema = get_schema(connection, sql)
+json_schema = json.dumps(dict_schema)
+
 def build_feature(rs):
-    var_Y = [rs.GetInt32Unsafe(0)]
-    row_X = [rs.GetInt32Unsafe(1), 
-            rs.GetDoubleUnsafe(2),
-            rs.GetDoubleUnsafe(3),
-            rs.GetDoubleUnsafe(4),
-            rs.GetDoubleUnsafe(5),
-            rs.GetDoubleUnsafe(6),
-            rs.GetDoubleUnsafe(7),
-            rs.GetDoubleUnsafe(8),
-            rs.GetDoubleUnsafe(9),
-            rs.GetInt32Unsafe(10),
-            rs.GetInt32Unsafe(11),
-            ]
-    var_X = [row_X]
+    var_Y = [rs[0]]
+    var_X = [rs[1:12]]
     return np.array(var_X)
 
 class SchemaHandler(tornado.web.RequestHandler):
     def get(self):
-        ok, req = fedb_driver.getRequestBuilder('db_test', sql)
-        if not ok or not req:
-            self.write("fail to get req")
-        input_schema = req.GetSchema()
-        if not input_schema:
-            self.write("no schema found")
-        schema = {}
-        for i in range(input_schema.GetColumnCnt()):
-            schema[input_schema.GetColumnName(i)] = sql_router_sdk.DataTypeName(input_schema.GetColumnType(i))
-        self.write(json.dumps(schema))
+        self.write(json_schema)
 
 class PredictHandler(tornado.web.RequestHandler):
     def post(self):
         row = json.loads(self.request.body)
-        ok, req = fedb_driver.getRequestBuilder('db_test', sql)
-        if not ok or not req:
-            self.write("fail to get req")
-            return
-        input_schema = req.GetSchema()
-        if not input_schema:
-            self.write("no schema found")
-            return
-        str_length = 0
-        for i in range(input_schema.GetColumnCnt()):
-            if sql_router_sdk.DataTypeName(input_schema.GetColumnType(i)) == 'string':
-                str_length = str_length + len(row.get(input_schema.GetColumnName(i), ''))
-        req.Init(str_length)
-        for i in range(input_schema.GetColumnCnt()):
-            tname =  sql_router_sdk.DataTypeName(input_schema.GetColumnType(i))
-            if tname == 'string':
-                req.AppendString(row.get(input_schema.GetColumnName(i), ''))
-            elif tname == 'int32':
-                req.AppendInt32(int(row.get(input_schema.GetColumnName(i), 0)))
-            elif tname == 'double':
-                req.AppendDouble(float(row.get(input_schema.GetColumnName(i), 0)))
-            elif tname == 'timestamp':
-                req.AppendTimestamp(int(row.get(input_schema.GetColumnName(i), 0)))
+        data = list()
+        for i in table_schema:
+            if i[1] == "string":
+                data.append(row.get(i[0], ""))
+            elif i[1] == "int" or i[1] == "double" or i[1] == "timestamp" or i[1] == "bigint":
+                data.append(row.get(i[0], 0))
             else:
-                req.AppendNULL()
-        if not req.Build():
-            self.write("fail to build request")
-            return
-
-        ok, rs = fedb_driver.executeQuery('db_test', sql, req)
-        if not ok:
-            self.write("fail to execute sql")
-            return
-        rs.Next()
-        ins = build_feature(rs)
-        self.write("----------------ins---------------\n")
-        self.write(str(ins) + "\n")
-        duration = bst.predict(ins)
-        self.write("---------------predict trip_duration -------------\n")
-        self.write("%s s"%str(duration[0]))
+                data.append(None)
+        rs = connection.execute(sql, tuple(data))
+        for r in rs:
+            ins = build_feature(r)
+            self.write("----------------ins---------------\n")
+            self.write(str(ins) + "\n")
+            duration = bst.predict(ins)
+            self.write("---------------predict trip_duration -------------\n")
+            self.write("%s s"%str(duration[0]))
 
 class MainHandler(tornado.web.RequestHandler):
     def get(self):

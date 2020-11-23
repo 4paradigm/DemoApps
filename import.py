@@ -6,7 +6,7 @@
 
 """
 """
-from fedb import driver
+import sqlalchemy as db
 
 
 import sys
@@ -29,29 +29,23 @@ index(key=vendor_id, ts=pickup_datetime),
 index(key=passenger_count, ts=pickup_datetime)
 );
 """
-
-options = driver.DriverOptions("127.0.0.1:2181", "/fedb")
-driver = driver.Driver(options)
-if not driver.init():
-    print ("init failed")
-    sys.exit(-1)
-
-ok, error = driver.createDB('db_test')
-if not ok:
-    print ("fail to create db test")
-    sys.exit(-1)
-
-ok, error = driver.executeDDL('db_test', ddl)
-if not ok:
-    print("fail to create table ")
-    sys.exit(-1)
+engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb')
+connection = engine.connect()
+try:
+    connection.execute("create database db_test;");
+except Exception as e:
+    print(e)
+try:
+    connection.execute(ddl);
+except Exception as e:
+    print(e)
 
 def insert_row(line):
     row = line.split(',')
     row[2] = '%dl'%int(datetime.datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S').timestamp() * 1000)
     row[3] = '%dl'%int(datetime.datetime.strptime(row[3], '%Y-%m-%d %H:%M:%S').timestamp() * 1000)
     insert = "insert into t1 values('%s', %s, %s, %s, %s, %s, %s, %s, %s, '%s', %s);"% tuple(row)
-    driver.executeInsert('db_test', insert)
+    connection.execute(insert)
 
 with open('data/taxi_tour_table_train_simple.csv', 'r') as fd:
     idx = 0
