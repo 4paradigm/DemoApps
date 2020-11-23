@@ -45,7 +45,7 @@ def insert_row(line):
     row[2] = '%dl'%int(datetime.datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S').timestamp() * 1000)
     row[3] = '%dl'%int(datetime.datetime.strptime(row[3], '%Y-%m-%d %H:%M:%S').timestamp() * 1000)
     insert = "insert into t1 values('%s', %s, %s, %s, %s, %s, %s, %s, %s, '%s', %s);"% tuple(row)
-    connection.execute(insert);
+    connection.execute(insert)
 
 with open('data/taxi_tour_table_train_simple.csv', 'r') as fd:
     idx = 0
