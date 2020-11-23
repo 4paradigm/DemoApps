@@ -17,27 +17,18 @@ originally called RTIDB, now renamed to FEDB
 
 目前只支持在第四范式官方镜像内部运行
 
-### 安装镜像
+## 拉取 docker 镜像
 
 本地机器cpu如果比较好可以下载高压缩比的包
 
 ```
-wget https://storage.4paradigm.com/api/public/dl/ccDsyXV9/fedb_2.0.0_beta.zip
-unzip fedb_2.0.0_beta.zip
-docker load -i fedb_2.0.0_beta.tar
-```
-
-cpu差可以直接下载非压缩版本
-
-```
-wget https://storage.4paradigm.com/api/public/dl/Mur8vGqz/fedb_2.0.0_beta.tar
-docker load -i fedb_2.0.0_beta.tar
+docker pull fedb/fedb:2.0.1
 ```
 
 ## 执行demo
 
 ```
-docker run -d develop-registry.4pd.io/fedb:2.0.0
+docker run -d fedb/fedb:2.0.1
 ```
 
 找到容器id, 并进入
