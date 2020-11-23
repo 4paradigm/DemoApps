@@ -19,8 +19,6 @@ originally called RTIDB, now renamed to FEDB
 
 ## 拉取 docker 镜像
 
-本地机器cpu如果比较好可以下载高压缩比的包
-
 ```
 docker pull fedb/fedb:2.0.1
 ```
