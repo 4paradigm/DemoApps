@@ -50,15 +50,13 @@ table_schema = [
 	("trip_duration", "int"),
 ]
 
-def get_schema(conn, sql):
-    rs = conn.execute(sql)
-    desc = rs._cursor_description()
+def get_schema():
     dict_schema = {}
-    for i in desc:
-        dict_schema[i[0]] = TypeDict[i[1]]
+    for i in table_schema:
+        dict_schema[i[0]] = i[1]
     return dict_schema
 
-dict_schema = get_schema(connection, sql)
+dict_schema = get_schema()
 json_schema = json.dumps(dict_schema)
 
 def build_feature(rs):
@@ -73,15 +71,15 @@ class SchemaHandler(tornado.web.RequestHandler):
 class PredictHandler(tornado.web.RequestHandler):
     def post(self):
         row = json.loads(self.request.body)
-        data = list()
+        data = {}
         for i in table_schema:
             if i[1] == "string":
-                data.append(row.get(i[0], ""))
+                data[i[0]] = row.get(i[0], "")
             elif i[1] == "int" or i[1] == "double" or i[1] == "timestamp" or i[1] == "bigint":
-                data.append(row.get(i[0], 0))
+                data[i[0]] = row.get(i[0], 0)
             else:
-                data.append(None)
-        rs = connection.execute(sql, tuple(data))
+                data[i[0]] = None
+        rs = connection.execute(sql, data)
         for r in rs:
             ins = build_feature(r)
             self.write("----------------ins---------------\n")
