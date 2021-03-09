@@ -20,13 +20,13 @@ originally called RTIDB, now renamed to FEDB
 ## 拉取 docker 镜像
 
 ```
-docker pull fedb/fedb:2.0.1
+docker pull fedb/fedb:2.1.0.1
 ```
 
 ## 执行demo
 
 ```
-docker run -d fedb/fedb:2.0.1
+docker run -d fedb/fedb:2.1.0.1
 ```
 
 找到容器id, 并进入
