@@ -71,7 +71,7 @@ class SchemaHandler(tornado.web.RequestHandler):
 class PredictHandler(tornado.web.RequestHandler):
     def post(self):
         row = json.loads(self.request.body)
-        data = dict()
+        data = {}
         for i in table_schema:
             if i[1] == "string":
                 data[i[0]] = row.get(i[0], "")
