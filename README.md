@@ -1,7 +1,5 @@
 # FEDB with SparkSQL demo
 
-originally called RTIDB, now renamed to FEDB
-
 
 ## 工程文件介绍
 
@@ -20,13 +18,13 @@ originally called RTIDB, now renamed to FEDB
 ## 拉取 docker 镜像
 
 ```
-docker pull fedb/fedb:2.1.0.1
+docker pull fedb/fedb:2.1.0
 ```
 
 ## 执行demo
 
 ```
-docker run -d fedb/fedb:2.1.0.1
+docker run -d fedb/fedb:2.1.0
 ```
 
 找到容器id, 并进入
@@ -71,7 +69,7 @@ fedb --zk_cluster=127.0.0.1:2181 --zk_root_path=/fedb --role=sql_client 2>/dev/n
  | | |  __ / |__| | |_) |
  |_|  \___||_____/|____/
 
-v2.0.0.0
+v2.1.0
 127.0.0.1:6527/>
 ```
 看到如上信息说明镜像运行成功
