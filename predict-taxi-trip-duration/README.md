@@ -40,6 +40,7 @@ sh train.sh
 python3 import.py
 # start predict server with model
 python3 predict_server.py >log 2>&1 &
+# send a http request to predict_server
 python3 predict.py
 # the output we will see
 ----------------ins---------------
