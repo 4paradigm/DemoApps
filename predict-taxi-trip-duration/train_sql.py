@@ -14,11 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from fespark.sql import SparkSession
+from pyspark.sql import SparkSession
+
+spark = SparkSession.builder.appName("demo").getOrCreate()
+sc = spark.sparkContext
 
 import numpy as np
 import pandas as pd
-import lightgbm as lgb
+#import lightgbm as lgb
 
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import GridSearchCV
@@ -55,6 +58,7 @@ y_train = train_set['trip_duration']
 x_train = train_set.drop(columns=['trip_duration'])
 y_predict = predict_set['trip_duration']
 x_predict = predict_set.drop(columns=['trip_duration'])
+
 lgb_train = lgb.Dataset(x_train, y_train)
 lgb_eval = lgb.Dataset(x_predict, y_predict, reference=lgb_train)
 
