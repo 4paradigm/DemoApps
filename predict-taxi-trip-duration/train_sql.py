@@ -21,7 +21,7 @@ sc = spark.sparkContext
 
 import numpy as np
 import pandas as pd
-#import lightgbm as lgb
+import lightgbm as lgb
 
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import GridSearchCV
