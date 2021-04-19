@@ -1,4 +1,4 @@
-# RealTime Prediction Application Demos with FEDB and NativeSpark
+# RealTime Prediction Application Demos with FEDB and SparkFE
 
 * [**predict-taxi-trip-duration**](https://github.com/4paradigm/DemoApps/tree/master/predict-taxi-trip-duration)
 * **detect-online-transaction-exceptions** (oncoming)

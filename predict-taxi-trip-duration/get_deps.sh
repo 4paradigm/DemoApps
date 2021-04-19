@@ -12,6 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-mkdir -p libs && cd libs
-wget https://storage.4paradigm.com/api/public/dl/JqXjDwS9/fesql-spark.jar
+wget https://github.com/4paradigm/SparkFE/releases/download/v0.1.1/spark-3.0.0-bin-sparkfe.tgz
+tar xzf ./spark-3.0.0-bin-sparkfe.tgz && rm ./spark-3.0.0-bin-sparkfe.tgz
 

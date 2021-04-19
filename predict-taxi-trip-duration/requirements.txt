@@ -1,4 +1,4 @@
-pyspark==2.4.5
+pyspark==3.0.0
 numpy
 pandas
 lightgbm
