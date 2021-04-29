@@ -29,4 +29,3 @@ req ={"id":"id0376262",
 	"trip_duration":1}
 r = requests.post(url, json=req)
 print(r.text)
-

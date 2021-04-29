@@ -39,29 +39,38 @@ index(key=vendor_id, ts=pickup_datetime),
 index(key=passenger_count, ts=pickup_datetime)
 );
 """
-engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb')
-connection = engine.connect()
-try:
-    connection.execute("create database db_test;");
-except Exception as e:
-    print(e)
-try:
-    connection.execute(ddl);
-except Exception as e:
-    print(e)
 
-def insert_row(line):
+# create fedb client driver
+engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb')
+
+
+def insert_row(line, conn):
+    """
+    function to write data to fedb
+    """
     row = line.split(',')
     row[2] = '%dl'%int(datetime.datetime.strptime(row[2], '%Y-%m-%d %H:%M:%S').timestamp() * 1000)
     row[3] = '%dl'%int(datetime.datetime.strptime(row[3], '%Y-%m-%d %H:%M:%S').timestamp() * 1000)
     insert = "insert into t1 values('%s', %s, %s, %s, %s, %s, %s, %s, %s, '%s', %s);"% tuple(row)
-    connection.execute(insert)
+    conn.execute(insert)
 
-with open('data/taxi_tour_table_train_simple.csv', 'r') as fd:
-    idx = 0
-    for line in fd:
-        if idx == 0:
+with engine.connect() as conn:
+    try:
+        conn.execute("create database db_test;");
+        print("create database db_test done")
+    except Exception as e:
+        print(e)
+    try:
+        conn.execute(ddl);
+        print("create table t1 in db_test done")
+    except Exception as e:
+        print(e)
+    with open('data/taxi_tour_table_train_simple.csv', 'r') as fd:
+        idx = 0
+        for line in fd:
+            if idx == 0:
+                idx = idx + 1
+                continue
+            insert_row(line.replace('\n', ''), conn)
             idx = idx + 1
-            continue
-        insert_row(line.replace('\n', ''))
-        idx = idx + 1
+        print("import %d records to t1 done"%(idx+1))

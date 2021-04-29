@@ -18,5 +18,5 @@ export SPARK_HOME=/work/spark-2.3.4-bin-hadoop2.7
 export PATH=$SPARK_HOME/bin:$PATH
 export FESQL_HOME=./libs
 export FESQL_JAR_FILE=fesql-spark.jar
-python3 train_sql.py
+python3 train.py
 

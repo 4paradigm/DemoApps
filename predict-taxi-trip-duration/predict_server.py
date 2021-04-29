@@ -27,25 +27,11 @@ import sqlalchemy as db
 from sqlalchemy_fedb.fedbapi import Type as feType
 
 bst = lgb.Booster(model_file='model.txt')
-
+TypeDict = {feType.Bool:"bool", feType.Int16:"smallint", feType.Int32:"int", feType.Int64:"bigint", feType.Float:"float", feType.Double:"double", feType.String:"string", feType.Date:"date", feType.Timestamp:"timestamp"}
 engine = db.create_engine('fedb:///db_test?zk=127.0.0.1:2181&zkPath=/fedb')
 connection = engine.connect()
-sql = """select trip_duration, passenger_count,
-sum(pickup_latitude) over w as vendor_sum_pl,
-max(pickup_latitude) over w as vendor_max_pl,
-min(pickup_latitude) over w as vendor_min_pl,
-avg(pickup_latitude) over w as vendor_avg_pl,
-sum(pickup_latitude) over w2 as pc_sum_pl,
-max(pickup_latitude) over w2 as pc_max_pl,
-min(pickup_latitude) over w2 as pc_min_pl,
-avg(pickup_latitude) over w2 as pc_avg_pl ,
-count(vendor_id) over w2 as pc_cnt,
-count(vendor_id) over w as vendor_cnt
-from t1
-window w as (partition by vendor_id order by pickup_datetime ROWS_RANGE BETWEEN 1d PRECEDING AND CURRENT ROW),
-w2 as (partition by passenger_count order by pickup_datetime ROWS_RANGE BETWEEN 1d PRECEDING AND CURRENT ROW);"""
-
-TypeDict = {feType.Bool:"bool", feType.Int16:"smallint", feType.Int32:"int", feType.Int64:"bigint", feType.Float:"float", feType.Double:"double", feType.String:"string", feType.Date:"date", feType.Timestamp:"timestamp"}
+with open("fe.sql",'r') as fd:
+    sql = fd.read()
 
 table_schema = [
 	("id", "string"),

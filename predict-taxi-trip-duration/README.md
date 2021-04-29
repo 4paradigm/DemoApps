@@ -2,10 +2,11 @@
 
 This demo uses [fedb](https://github.com/4paradigm/fedb) and [NativeSpark](https://github.com/4paradigm/NativeSpark) to develop a realtime prediction appliction for the New York City Taxi Trip Duration on [Kaggle](https://www.kaggle.com/c/nyc-taxi-trip-duration/overview)
 
+
 ## Feature Engineering SQL Script
 
 ```
-sql_tpl = ""select trip_duration, passenger_count,
+select trip_duration, passenger_count,
 sum(pickup_latitude) over w as vendor_sum_pl,
 max(pickup_latitude) over w as vendor_max_pl,
 min(pickup_latitude) over w as vendor_min_pl,
@@ -16,15 +17,15 @@ min(pickup_latitude) over w2 as pc_min_pl,
 avg(pickup_latitude) over w2 as pc_avg_pl ,
 count(vendor_id) over w2 as pc_cnt,
 count(vendor_id) over w as vendor_cnt
-from {}
+from t1
 window w as (partition by vendor_id order by pickup_datetime ROWS_RANGE BETWEEN 1d PRECEDING AND CURRENT ROW),
-w2 as (partition by passenger_count order by pickup_datetime ROWS_RANGE BETWEEN 1d PRECEDING AND CURRENT ROW)"""
+w2 as (partition by passenger_count order by pickup_datetime ROWS_RANGE BETWEEN 1d PRECEDING AND CURRENT ROW);
 ```
 
-## Running the Tour
+## Running the Demo 
 
 ```
-docker run -dt ghcr.io/4paradigm/fedb:2.1.0
+docker run -dt 4pdosc/fedb:2.1.0
 # find the container id
 CONTAINER_ID=`docker ps | grep fedb | awk '{print $1}'`
 docker exec -it ${CONTAINER_ID} /bin/bash
