@@ -1,4 +1,4 @@
-# RealTime Prediction Application Demos with FEDB and SparkFE
+# RealTime Prediction Application Demos with OpenMLDB
 
 * [**predict-taxi-trip-duration**](https://github.com/4paradigm/DemoApps/tree/master/predict-taxi-trip-duration)
 * [**predict-taxi-trip-duration-notebook**](https://github.com/4paradigm/DemoApps/blob/main/predict-taxi-trip-duration-nb/develop_ml_application_tour.ipynb)
