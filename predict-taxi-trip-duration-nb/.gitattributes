@@ -1,5 +1,0 @@
-spark-3.0.0-bin-sparkfe.tgz filter=lfs diff=lfs merge=lfs -text
-fedb-2.2.0-linux.tar.gz filter=lfs diff=lfs merge=lfs -text
-jdk-8u141-linux-x64.tar.gz filter=lfs diff=lfs merge=lfs -text
-zookeeper-3.4.14.tar.gz filter=lfs diff=lfs merge=lfs -text
-fedb-2.2.0-py3-none-any.whl filter=lfs diff=lfs merge=lfs -text
