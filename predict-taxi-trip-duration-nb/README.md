@@ -1,4 +1,4 @@
-# develop an online `Predict Taxi Tour Duration` appliction with sql on jupyter notebook
+# develop an online `Predict Taxi Tour Duration` application with sql on jupyter notebook
 
 run this tour
 
