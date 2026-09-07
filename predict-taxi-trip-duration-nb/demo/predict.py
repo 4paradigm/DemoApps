@@ -35,7 +35,7 @@ req ={"id":"id0376262",
 	"trip_duration":1}
 r = requests.post(url, json=req)
 print(r.text)
-print("Congraduation! You have finished the task.")
+print("Congratulations! You have finished the task.")
 tmp = os.urandom(44)
 secret_key = base64.b64encode(tmp)
 print("Your Key:" + str(secret_key))
